@@ -2,17 +2,17 @@ import { defineStore } from 'pinia'
 
 interface Transaction {
   id: string
-  type: 'send' | 'receive' | 'add'
+  type: 'deposit' | 'withdrawal'
   amount: number
-  currency: string
-  timestamp: string
-  description: string
+  date: string
+  status: 'success' | 'failed'
 }
 
 interface WalletState {
   balance: number
   currency: string
-  ready: boolean
+  ready: boolean,
+  transactionReady: boolean,
   isDepositModalOpen: boolean
   transactions: Transaction[]
 }
@@ -22,6 +22,7 @@ export const useWalletStore = defineStore('wallet', {
     balance: 0,
     currency: 'ZAR',
     ready: false,
+    transactionReady: false,
     isDepositModalOpen: false,
     transactions: []
   }),
@@ -50,7 +51,6 @@ export const useWalletStore = defineStore('wallet', {
           this.currency = data.value.currency
         }
         
-
         setTimeout(() => {
             this.ready = true;
         }, 3000);
@@ -60,6 +60,21 @@ export const useWalletStore = defineStore('wallet', {
       }
     },
 
+    async fetchTransactions() {
+        try {
+          const { data } = await useFetch<{ transactions: Transaction[] }>('/api/transactions')
+          
+          if (data.value) {
+            this.transactions = data.value.transactions || []
+          }
+          setTimeout(() => {
+            this.transactionReady = true;
+        }, 4000);
+        } catch (error) {
+          console.error('Error fetching balance:', error)
+        }
+      },
+
     openDepositModal() {
       this.isDepositModalOpen = true
     },
@@ -68,20 +83,23 @@ export const useWalletStore = defineStore('wallet', {
       this.isDepositModalOpen = false
     },
 
-    addTransaction(transaction: Omit<Transaction, 'id' | 'timestamp'>) {
+    addTransaction(amount: number, type: 'deposit' | 'withdrawal') {
       const newTransaction: Transaction = {
-        ...transaction,
+        amount, 
+        type,
         id: crypto.randomUUID(),
-        timestamp: new Date().toISOString()
+        status: "success", 
+        date: new Date().toISOString()
       }
       this.transactions.push(newTransaction)
 
-      // Update balance based on transaction type
-      if (transaction.type === 'add' || transaction.type === 'receive') {
-        this.balance += transaction.amount
-      } else if (transaction.type === 'send') {
-        this.balance -= transaction.amount
+      if (newTransaction.type === 'deposit') {
+        this.balance += newTransaction.amount
+      } else if (newTransaction.type === 'withdrawal') {
+        this.balance -= newTransaction.amount
       }
+
+      this.isDepositModalOpen = false
     }
   }
 })

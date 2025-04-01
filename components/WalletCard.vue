@@ -17,7 +17,7 @@ onMounted(() => {
 
     <Motion 
       v-if="!ready"
-      :initial="{ opacity: 0.5, scale: 0 }"
+      :initial="{ opacity: 0.5, scale: 1 }"
       :animate="{ opacity: 1, scale: 1 }"
       :transition="{ duration: 1.5 }"
       class="flex items-center justify-center animate-pulse col-span-full md:col-span-1 rounded-lg border bg-card text-card-foreground shadow-sm h-64"

@@ -9,7 +9,10 @@ export default defineNuxtConfig({
       tailwindcss(),
     ],
   },
-  modules: ['shadcn-nuxt'],
+  modules: [
+    'shadcn-nuxt',
+    'motion-v/nuxt'
+  ],
   shadcn: {
     prefix: '',
     componentDir: './components/ui'

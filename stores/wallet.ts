@@ -42,7 +42,7 @@ export const useWalletStore = defineStore('wallet', {
   actions: {
     async fetchBalance() {
       try {
-        const { data } = await useFetch('/api/wallet-balance')
+        const { data } = await useFetch<{ balance: number; currency: string }>('/api/wallet-balance')
         this.balance = data.value?.balance || 0
         this.currency = data.value?.currency || 'ZAR'
         this.ready = true

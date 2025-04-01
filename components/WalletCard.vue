@@ -1,3 +1,7 @@
+<script setup>
+import { WalletIcon, ArrowUpIcon, ArrowDownIcon, PlusIcon } from 'lucide-vue-next';
+</script>
+
 <template>
   <div class="container mx-auto py-8 px-4">
     <h1 class="text-3xl font-bold mb-8">Bonmoja Wallet</h1>

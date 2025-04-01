@@ -13,6 +13,7 @@ interface WalletState {
   balance: number
   currency: string
   ready: boolean
+  isDepositModalOpen: boolean
   transactions: Transaction[]
 }
 
@@ -21,6 +22,7 @@ export const useWalletStore = defineStore('wallet', {
     balance: 0,
     currency: 'ZAR',
     ready: false,
+    isDepositModalOpen: false,
     transactions: []
   }),
 
@@ -31,7 +33,7 @@ export const useWalletStore = defineStore('wallet', {
         currency: state.currency
       }).format(state.balance)
     },
-    
+
     recentTransactions: (state) => {
       return [...state.transactions].sort((a, b) => 
         new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -42,13 +44,28 @@ export const useWalletStore = defineStore('wallet', {
   actions: {
     async fetchBalance() {
       try {
-        const { data } = await useFetch<{ balance: number; currency: string }>('/api/wallet-balance')
-        this.balance = data.value?.balance || 0
-        this.currency = data.value?.currency || 'ZAR'
-        this.ready = true
+        const { data } = await useFetch<{ balance: number; currency: string }>('/api/wallet')
+        if (data.value) {
+          this.balance = data.value.balance
+          this.currency = data.value.currency
+        }
+        
+
+        setTimeout(() => {
+            this.ready = true;
+        }, 3000);
+
       } catch (error) {
         console.error('Error fetching balance:', error)
       }
+    },
+
+    openDepositModal() {
+      this.isDepositModalOpen = true
+    },
+
+    closeDepositModal() {
+      this.isDepositModalOpen = false
     },
 
     addTransaction(transaction: Omit<Transaction, 'id' | 'timestamp'>) {
@@ -58,15 +75,13 @@ export const useWalletStore = defineStore('wallet', {
         timestamp: new Date().toISOString()
       }
       this.transactions.push(newTransaction)
-      
+
       // Update balance based on transaction type
-      if (transaction.type === 'add') {
+      if (transaction.type === 'add' || transaction.type === 'receive') {
         this.balance += transaction.amount
       } else if (transaction.type === 'send') {
         this.balance -= transaction.amount
-      } else if (transaction.type === 'receive') {
-        this.balance += transaction.amount
       }
     }
   }
-}) 
+})

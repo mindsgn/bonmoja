@@ -59,7 +59,6 @@ const transactionsHistory = ref([
               </thead>
               <tbody class="[&_tr:last-child]:border-0">
                 <tr v-for="(transaction, index) in transactionsHistory" :key="index" class="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                  <td class="p-4 align-middle font-medium">{{ transaction.description }}</td>
                   <td class="p-4 align-middle">{{ transaction.date }}</td>
                   <td class="p-4 align-middle">
                     <span 

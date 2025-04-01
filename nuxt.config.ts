@@ -11,7 +11,8 @@ export default defineNuxtConfig({
   },
   modules: [
     'shadcn-nuxt',
-    'motion-v/nuxt'
+    'motion-v/nuxt',
+    '@pinia/nuxt',
   ],
   shadcn: {
     prefix: '',
